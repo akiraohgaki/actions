@@ -28,6 +28,7 @@ runs:
   using: composite
   steps:
     - name: Install QEMU dependency
+      shell: bash
       run: |
         sudo apt update
         DEBIAN_FRONTEND=noninteractive sudo apt install -y --no-install-recommends \
