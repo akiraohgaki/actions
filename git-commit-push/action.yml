@@ -1,0 +1,32 @@
+name: git-commit-push
+description: Git commit and push
+
+inputs:
+  user-name:
+    default: GitHub Actions
+    required: false
+  user-email:
+    default: actions@github.com
+    required: false
+  commit-message:
+    default: Apply automatic changes
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Git commit and push
+      shell: bash
+      run: |
+        git add -N .
+        if ! git diff --exit-code --quiet; then
+          git config --local user.name "${INPUT_USER_NAME}"
+          git config --local user.email "${INPUT_USER_EMAIL}"
+          git add .
+          git commit -m "${INPUT_COMMIT_MESSAGE}"
+          git push
+        fi
+      env:
+        INPUT_USER_NAME: ${{ inputs.user-name }}
+        INPUT_USER_EMAIL: ${{ inputs.user-email }}
+        INPUT_COMMIT_MESSAGE: ${{ inputs.commit-message }}
