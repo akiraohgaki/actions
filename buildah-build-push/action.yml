@@ -1,0 +1,49 @@
+name: buildah-build-push
+description: Build and push container image with Buildah
+
+inputs:
+  username:
+    default: ''
+    required: true
+  password:
+    default: ''
+    required: true
+  registry:
+    default: ''
+    required: true
+  image:
+    default: ''
+    required: true
+  tags:
+    default: latest
+    required: false
+  platforms:
+    default: linux/amd64, linux/arm64
+    required: false
+  containerfiles:
+    default: ./Containerfile
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Install QEMU dependency
+      run: |
+        sudo apt update
+        DEBIAN_FRONTEND=noninteractive sudo apt install -y --no-install-recommends \
+        qemu-user-static
+
+    - uses: redhat-actions/buildah-build@v2
+      with:
+        image: ${{ inputs.image }}
+        tags: ${{ inputs.tags }}
+        platforms: ${{ inputs.platforms }}
+        containerfiles: ${{ inputs.containerfiles }}
+
+    - uses: redhat-actions/push-to-registry@v2
+      with:
+        registry: ${{ inputs.registry }}
+        image: ${{ inputs.image }}
+        tags: ${{ inputs.tags }}
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
