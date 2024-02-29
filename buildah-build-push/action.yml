@@ -1,5 +1,5 @@
 name: buildah-build-push
-description: Build and push container image with Buildah
+description: Build and push container image with Buildah and Podman
 
 inputs:
   username:
@@ -20,8 +20,14 @@ inputs:
   platforms:
     default: linux/amd64, linux/arm64
     required: false
+  context:
+    default: .
+    required: false
   containerfiles:
     default: ./Containerfile
+    required: false
+  build-args:
+    default: ''
     required: false
 
 runs:
@@ -39,12 +45,14 @@ runs:
         image: ${{ inputs.image }}
         tags: ${{ inputs.tags }}
         platforms: ${{ inputs.platforms }}
+        context: ${{ inputs.context }}
         containerfiles: ${{ inputs.containerfiles }}
+        build-args: ${{ inputs.build-args }}
 
     - uses: redhat-actions/push-to-registry@v2
       with:
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
         registry: ${{ inputs.registry }}
         image: ${{ inputs.image }}
         tags: ${{ inputs.tags }}
-        username: ${{ inputs.username }}
-        password: ${{ inputs.password }}
